@@ -27,12 +27,21 @@ FFMPEG_URL = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
 FFMPEG_ZIP = "ffmpeg-release-essentials.zip"
 FFMPEG_DIR = "ffmpeg-bin"
 
+
 def setup_ffmpeg_windows():
+    # Check if ffmpeg.exe already exists in our bin directory
+    for root, dirs, files in os.walk(FFMPEG_DIR):
+        if 'ffmpeg.exe' in files:
+            bin_path = root
+            os.environ['PATH'] = bin_path + os.pathsep + os.environ['PATH']
+            print(f"Using existing ffmpeg at {bin_path}")
+            return True
+    # If not found, download and extract
     print("Starting ffmpeg download...")
     urllib.request.urlretrieve(FFMPEG_URL, FFMPEG_ZIP, reporthook=download_progress_hook)
     with zipfile.ZipFile(FFMPEG_ZIP, 'r') as zip_ref:
         zip_ref.extractall(FFMPEG_DIR)
-    # Find the bin directory
+    # Find the bin directory again
     for root, dirs, files in os.walk(FFMPEG_DIR):
         if 'ffmpeg.exe' in files:
             bin_path = root
